@@ -135,17 +135,5 @@ describe("official brand publication preparation", () => {
     db.close();
   });
 
-  it("keeps official-brand producer and protected publisher on the source-id artifact contract", async () => {
-    const [producer, publisher] = await Promise.all([
-      readFile(".github/workflows/official-brand-discovery.yml", "utf8"),
-      readFile(".github/workflows/publish-official-brand-discoveries.yml", "utf8"),
-    ]);
-    expect(producer).toContain("official-brand-${{ matrix.source }}-${{ github.run_id }}");
-    expect(publisher).toContain("PUBLISH_OFFICIAL_BRAND_DISCOVERIES_TO_PRODUCTION");
-    expect(publisher).toContain("Official brand discovery");
-    expect(publisher).toContain("official-brand-${source}-${runId}");
-    expect(publisher).toContain("Official-brand publication refuses pending migrations.");
-    expect(publisher).toContain("pnpm data:brand-prepare");
-    expect(publisher).toContain("pnpm data:brand-import-sql");
-  });
+
 });

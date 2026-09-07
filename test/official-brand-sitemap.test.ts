@@ -233,13 +233,10 @@ describe("official brand sitemap discovery", () => {
     expect(() => validateOfficialBrandSource({ ...source, sitemapUrls: ["https://other.example/sitemap.xml"] })).toThrow("outside the configured boundary");
   });
 
-  it("keeps the scheduled catalog matrix aligned with every configured source", async () => {
+  it("keeps the retained source configuration valid without scheduled discovery", async () => {
     const config = JSON.parse(await readFile("config/official-brand-sources.json", "utf8")) as OfficialBrandDiscoveryConfig;
-    validateOfficialBrandConfig(config);
-    const workflow = await readFile(".github/workflows/official-brand-discovery.yml", "utf8");
-    for (const configured of config.sources) expect(workflow).toContain(`- source: ${configured.id}`);
-    expect(workflow).toContain("timeout-minutes: ${{ matrix.timeout_minutes || 15 }}");
-    expect(workflow).toContain("timeout_minutes: 30");
+    expect(() => validateOfficialBrandConfig(config)).not.toThrow();
+    expect(config.sources.length).toBeGreaterThan(0);
   });
 
   it("reconciles first-party identity and offer evidence through the normal import path", async () => {

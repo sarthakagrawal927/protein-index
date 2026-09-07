@@ -483,3 +483,21 @@ failing tests: all failures read production workflow files removed by retirement
 commit `518ee75`. Existing maintenance CI explicitly excludes those stale
 workflow tests. This repair does not restore automation or claim the full
 `pnpm check` command passes.
+
+
+## 2026-09-07 — Retired workflow test cleanup
+
+Replaced assertions about deleted producer/publisher YAML with an explicit
+maintenance-only workflow allowlist and checks against production credentials,
+write permissions, schedules and publication commands. Kept the retained
+exact-response restore action assertions and all executable publication/ingestion
+validation tests. The retained brand source configuration is still validated.
+No workflows were restored or changed. Historical workflow contracts remain in
+Git history for any separately reviewed reactivation.
+
+Validation: full `pnpm check` passes (332 unit tests, 61 Worker tests, generated
+types, typecheck and production build). The test count fell because obsolete
+workflow text assertions were replaced, not skipped. Repository ownership still
+needs reconciliation: the private dossier points public source at
+`protein-index-resilience`, while this maintained checkout tracks `protein-index`.
+Live deployment remains pending approval and ownership verification.

@@ -80,7 +80,8 @@ expansion.
 
 ## Next steps
 
-Complete checks and live qualification for the authorized presentation repair.
+The full `pnpm check` and docs validation pass for the presentation repair.
+Confirm the canonical public repository and complete live qualification.
 Any resumption of data production requires a separate reactivation decision.
 
 ## Deferred

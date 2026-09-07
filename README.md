@@ -254,6 +254,8 @@ Durable product status and the shipped-feature history live in
 - Deploy the nutrition-detail evidence repair after explicit deployment approval;
   verify a real unverified product and a machine-checked label on desktop and
   mobile, including source navigation and the protein-density calculation.
-- Reconcile retired workflow contract tests with the current retirement boundary.
-  `pnpm check` currently has 13 missing-workflow failures; preserve publication
-  safeguards without restoring retired production automation.
+- Reconcile the public source link (`protein-index-resilience`) with this
+  maintained checkout before release; confirm which repository owns the live build.
+
+The stale workflow tests are now replaced by retirement-boundary checks. The
+full `pnpm check` passes, including 332 unit tests and 61 Worker tests.

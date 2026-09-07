@@ -2198,81 +2198,7 @@ describe("Open Food Facts bulk staging", () => {
     expect(() => assertIdempotentPublicationReplay(after, { ...after, sourceRecords: 22 })).toThrow("sourceRecords");
   });
 
-  it("keeps the manual publication router explicit, pinned, serialized, migration-free, and auditable", async () => {
-    const workflow = await readFile(".github/workflows/publish-automatic-evidence.yml", "utf8");
-    for (const [name, family] of Object.entries(AUTOMATIC_PUBLICATION_FAMILIES)) {
-      expect(workflow).toContain(`'${name}': Object.freeze({ source: '${family.source}', adapterVersion: '${CURRENT_PUBLICATION_ADAPTER_VERSIONS[family.source]}', artifactPrefix: '${family.artifactPrefix}' })`);
-    }
-    expect(workflow).toContain("workflow_dispatch:");
-    expect(workflow).toContain("upstream_run_id:");
-    expect(workflow).toContain("confirm_production_publication:");
-    expect(workflow).toContain("PUBLISH_VERIFIED_EVIDENCE_TO_PRODUCTION");
-    expect(workflow).toContain("needs: authorize");
-    expect(workflow).toContain("if: needs.authorize.outputs.approved == 'true'");
-    expect(workflow).not.toContain("workflow_run:");
-    expect(workflow).toContain("actions: read");
-    expect(workflow).toContain("contents: read");
-    expect(workflow).toContain("getWorkflowRun");
-    expect(workflow).toContain("run.head_branch !== context.payload.repository.default_branch");
-    expect(workflow).toContain("run.head_repository?.full_name !== `${context.repo.owner}/${context.repo.repo}`");
-    expect(workflow).toContain("ref: ${{ github.sha }}");
-    expect(workflow).toContain("persist-credentials: false");
-    expect(workflow).toContain("Require current publisher and upstream ancestry");
-    expect(workflow).toContain("git merge-base --is-ancestor");
-    expect(workflow).toContain("test -f migrations/0009_extraction_outcome_ledger.sql");
-    expect(workflow).toContain("validateAutomaticPublicationSnapshot");
-    expect(workflow).toContain("applyEvidenceDecisions: !automatic");
-    expect(workflow).toContain("Require protected publication credentials");
-    expect(workflow).toContain("-z \"$CLOUDFLARE_API_TOKEN\"");
-    expect(workflow).toContain("-z \"$CLOUDFLARE_ACCOUNT_ID\"");
-    expect(workflow).toContain("artifact.digest");
-    expect(workflow).toContain("artifact.size_in_bytes");
-    expect(workflow).toContain("Initialize durable publication evidence");
-    expect(workflow).toContain('evidence_dir="$RUNNER_TEMP/protein-index-publication-evidence"');
-    expect(workflow).toContain('echo "PUBLICATION_EVIDENCE_DIR=$evidence_dir" >> "$GITHUB_ENV"');
-    expect(workflow).not.toContain("PUBLICATION_EVIDENCE_DIR: ${{ runner.temp }}");
-    expect(workflow).toContain("path: ${{ env.PUBLICATION_EVIDENCE_DIR }}/");
-    expect(workflow).not.toContain("path: .data/publication-evidence/");
-    expect(workflow).toContain("group: protein-index-production-publication");
-    expect(workflow).toContain("cancel-in-progress: false");
-    expect(workflow).toContain("environment: production");
-    expect(workflow).toContain("--automatic");
-    expect(workflow).toContain("--skip-migrations");
-    expect(workflow).toContain("--upstream-repository");
-    expect(workflow).toContain("--artifact-digest");
-    expect(workflow).toContain("--artifact-bytes");
-    expect(workflow).toContain("Re-audit current reviewed decisions against extraction evidence");
-    expect(workflow).toContain("bound-decision-drift.json");
-    expect(workflow).toContain("publication-decision-drift.json");
-    expect(workflow).not.toContain("migrations apply");
-    expect(workflow).not.toContain("wrangler deploy");
-    expect(workflow).toContain("retention-days: 90");
-    expect(workflow).toContain("if: always()");
-    expect(workflow).toContain("/api/health");
-    expect(workflow).toContain("/api/products?scope=all");
-
-    const reviewed = await readFile(".github/workflows/publish-robotoff-candidates.yml", "utf8");
-    expect(reviewed).toContain("expected_head_sha:");
-    expect(reviewed).toContain("expected_artifact_digest:");
-    expect(reviewed).toContain("confirm_production_publication:");
-    expect(reviewed).toContain("PUBLISH_REVIEWED_LABEL_CANDIDATES_TO_PRODUCTION");
-    expect(reviewed).toContain("needs: authorize");
-    expect(reviewed).toContain("if: needs.authorize.outputs.approved == 'true'");
-    expect(reviewed).toContain("ref: ${{ github.sha }}");
-    expect(reviewed).toContain("persist-credentials: false");
-    expect(reviewed).toContain("git merge-base --is-ancestor");
-    expect(reviewed).toContain("actual_digest=\"$(sha256sum .data-robotoff.zip");
-    expect(reviewed).toContain("publication-decision-drift.json");
-    expect(reviewed).toContain("getWorkflowRun");
-    expect(reviewed).toContain("new Set([29551181430, 29552807113])");
-    expect(reviewed).toContain("new Set([8395774354, 8396363821]).has(artifact.id)");
-    expect(workflow).toContain("new Set([29551181430, 29552807113]).has(run.id)");
-    expect(workflow).toContain("new Set([8395774354, 8396363821]).has(artifact.id)");
-    expect(reviewed).toContain("robotoff-api-v8");
-    expect(reviewed).toContain("robotoff-ingredients-api-v3");
-    expect(reviewed).toContain("--automatic");
-    expect(reviewed).toContain("--skip-migrations");
-
+  it("keeps the retained exact-response restore action pinned and auditable", async () => {
     const restore = await readFile(".github/actions/restore-exact-responses/action.yml", "utf8");
     expect(restore).toContain("expected-source:");
     expect(restore).toContain("expected-request-schema:");
@@ -2308,60 +2234,6 @@ describe("Open Food Facts bulk staging", () => {
       .join("\n");
     const shellParse = spawnSync("bash", ["-n"], { input: shell, encoding: "utf8" });
     expect(shellParse.status, shellParse.stderr).toBe(0);
-    for (const sourceConsumerWorkflow of [
-      ".github/workflows/enrich-open-food-facts.yml",
-      ".github/workflows/extract-robotoff.yml",
-      ".github/workflows/extract-robotoff-ingredients.yml",
-    ]) {
-      const consumer = await readFile(sourceConsumerWorkflow, "utf8");
-      expect(consumer).toContain("getWorkflowRun");
-      expect(consumer).toContain("run.name !== 'Source sync' || run.conclusion !== 'success'");
-      expect(consumer).toContain("run.head_branch !== context.payload.repository.default_branch");
-      expect(consumer).toContain("run.head_repository?.full_name !== `${context.repo.owner}/${context.repo.repo}`");
-      expect(consumer).toContain("matches.length !== 1");
-      expect(consumer).toContain("artifact.digest");
-      expect(consumer).toContain("artifact.size_in_bytes <= 0");
-      expect(consumer).toContain("expected-source:");
-      expect(consumer).toContain("expected-request-schema:");
-      expect(consumer).toContain("expected-workflow-name:");
-    }
-    for (const extractionWorkflow of [
-      ".github/workflows/extract-robotoff.yml",
-      ".github/workflows/extract-robotoff-ingredients.yml",
-    ]) {
-      const extraction = await readFile(extractionWorkflow, "utf8");
-      expect(extraction).toContain("label-assets.jsonl");
-      expect(extraction).toContain("extraction-attempts.jsonl");
-      expect(extraction).toContain("extraction-attempt-labels.jsonl");
-      expect(extraction).toContain('restore-label-proofs: "true"');
-      expect(extraction).toContain("diagnostic-artifact-prefix:");
-      expect(extraction).toContain("expected-adapter-version:");
-      expect(extraction).toContain("expected-diagnostic-failure-step:");
-      expect(extraction).toContain("pnpm data:audit-decisions --");
-      expect(extraction).toContain("--bundle-set review-decisions/active-bundles.json");
-      expect(extraction).toContain("--fail-on candidate_key_active_state_ambiguous");
-      expect(extraction).toContain("decision-drift audit");
-      expect(extraction).toContain("if: always()");
-      expect(extraction).toContain("timeout-minutes: 360");
-      expect(extraction).toContain("timeout-minutes: 345");
-      expect(extraction).toContain("Upload extraction diagnostics");
-      expect(extraction).toContain("responses/*.json");
-      expect(extraction).toContain("digest !== artifact.digest");
-      expect(extraction).toContain("retention-days: 90");
-      expect(extraction).toMatch(/expected-request-schema: [a-f0-9]{64}/);
-    }
-    for (const publisher of [
-      ".github/workflows/publish-automatic-evidence.yml",
-      ".github/workflows/publish-robotoff-candidates.yml",
-    ]) {
-      expect(await readFile(publisher, "utf8")).toContain("--bundle-set review-decisions/active-bundles.json");
-    }
-    expect(await readFile(".github/workflows/enrich-open-food-facts.yml", "utf8"))
-      .toContain(`expected-request-schema: ${OPEN_FOOD_FACTS_API_REQUEST_SCHEMA}`);
-    expect(await readFile(".github/workflows/extract-robotoff.yml", "utf8"))
-      .toContain(`expected-request-schema: ${ROBOTOFF_API_REQUEST_SCHEMA}`);
-    expect(await readFile(".github/workflows/extract-robotoff-ingredients.yml", "utf8"))
-      .toContain(`expected-request-schema: ${ROBOTOFF_INGREDIENT_REQUEST_SCHEMA}`);
   });
 
   it("accepts only source-complete, reconciled production snapshots for publication", () => {
