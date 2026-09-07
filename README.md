@@ -254,8 +254,11 @@ Durable product status and the shipped-feature history live in
 - Deploy the nutrition-detail evidence repair after explicit deployment approval;
   verify a real unverified product and a machine-checked label on desktop and
   mobile, including source navigation and the protein-density calculation.
-- Reconcile the public source link (`protein-index-resilience`) with this
-  maintained checkout before release; confirm which repository owns the live build.
+- Canonical source `protein-index-resilience` now contains the nutrition-evidence
+  fixes in [51c0583](https://github.com/Significant-Hobbies/protein-index-resilience/commit/51c0583792f2c7d3aac70efa5e3d8b1f314ec77e), preserving its discovery routes and data notices.
+  The histories remain divergent; this checkout is the historical alias. Verify
+  the actual production revision before choosing a release, and perform future
+  public-source repairs in the canonical repository.
 
 The stale workflow tests are now replaced by retirement-boundary checks. The
 full `pnpm check` passes, including 332 unit tests and 61 Worker tests.
