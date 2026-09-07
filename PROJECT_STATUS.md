@@ -464,3 +464,22 @@ the strict terminal-evidence gate above is actually satisfied.
     current source or retained current-label bytes. GTIN or catalog presence
     alone never marks identity verified; its source-checked evidence publication
     remains separate from the dashboard release.
+
+
+## 2026-09-07 — Nutrition evidence in public details
+
+The owner requested shareability repairs across retained projects. The product
+drawer now preserves nutrition verification status, evidence authority, original
+HTTP(S) source links and observation dates. Missing evidence stays explicit,
+machine checking is distinguished from human review, and derived density inherits
+the macro evidence status. No ingestion, publication, migrations or catalog data
+changed. Five added regression cases cover unverified data, machine evidence and
+missing/unsafe links; the focused dashboard suite passes all 14 tests. Deployment
+and live browser qualification remain pending.
+
+Validation: typecheck, 61 Worker tests, production build, documentation links and
+diff whitespace checks pass. The full unit suite reports 328 passing and 13
+failing tests: all failures read production workflow files removed by retirement
+commit `518ee75`. Existing maintenance CI explicitly excludes those stale
+workflow tests. This repair does not restore automation or claim the full
+`pnpm check` command passes.

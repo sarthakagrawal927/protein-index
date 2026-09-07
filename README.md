@@ -247,3 +247,13 @@ system lives under [docs/](docs/index.md).
 
 Durable product status and the shipped-feature history live in
 `PROJECT_STATUS.md`. The retired repository has no active planning backlog.
+
+
+### Remaining shareability qualification (2026-09-07)
+
+- Deploy the nutrition-detail evidence repair after explicit deployment approval;
+  verify a real unverified product and a machine-checked label on desktop and
+  mobile, including source navigation and the protein-density calculation.
+- Reconcile retired workflow contract tests with the current retirement boundary.
+  `pnpm check` currently has 13 missing-workflow failures; preserve publication
+  safeguards without restoring retired production automation.

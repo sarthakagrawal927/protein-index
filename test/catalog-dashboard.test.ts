@@ -1,8 +1,8 @@
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { CatalogLoadingState, CatalogTable, CoverageLoadingState, HeaderProductLookup, lookupDestination } from "../src/App";
-import type { CatalogProduct, CatalogResponse } from "../shared/api";
+import { ProductDrawer, CatalogLoadingState, CatalogTable, CoverageLoadingState, HeaderProductLookup, lookupDestination } from "../src/App";
+import type { CatalogProduct, CatalogResponse, ProductDetailResponse } from "../shared/api";
 import { calculateMetrics } from "../shared/metrics";
 
 function product(input: { calories: number | null; proteinGrams: number | null }): CatalogProduct {
@@ -181,5 +181,45 @@ describe("catalog comparison surface", () => {
     expect(markup).toContain('aria-label="Checking the index"');
     expect(markup.match(/lookup-skeleton/g)).toHaveLength(1);
     expect(markup).not.toContain("No exact catalog match yet");
+  });
+});
+
+function renderDetail(overrides: Partial<ProductDetailResponse> = {}): string {
+  const detail: ProductDetailResponse = {
+    ...product({ calories: 16, proteinGrams: 4 }),
+    sourceRecords: [], ingredientStatement: null, ingredients: [], allergens: [],
+    additives: [], nutrients: [], ratings: [], provenance: [], completenessMissing: [], openReviewCount: 0,
+    ...overrides,
+  };
+  return renderToStaticMarkup(createElement(ProductDrawer, { detail, loading: false, error: null, onClose: () => undefined }));
+}
+
+describe("product detail evidence", () => {
+  it("keeps unverified source evidence beside the macros and qualifies derived density", () => {
+    const markup = renderDetail({ nutritionStatus: "unverified", nutritionEvidenceAuthority: "community", nutritionEvidenceKind: "source", nutritionEvidenceUrl: "https://example.com/product" });
+    expect(markup).toContain("unverified nutrition");
+    expect(markup).toContain("Community-provided data.");
+    expect(markup).toContain('href="https://example.com/product"');
+    expect(markup).toContain("View nutrition source");
+    expect(markup).toContain("2026-07-17");
+    expect(markup).toContain("the same evidence status applies");
+    expect(markup).toContain("25 g");
+  });
+
+  it("distinguishes machine labels from human review", () => {
+    const markup = renderDetail({ nutritionStatus: "machine_verified", nutritionEvidenceAuthority: "machine_verified_label" });
+    expect(markup).toContain("machine-verified from label");
+    expect(markup).toContain("not human reviewed");
+    expect(markup).toContain("View original nutrition label");
+    expect(markup).not.toContain("Human-reviewed label.");
+  });
+
+  it.each([null, "javascript:alert(1)", "not-a-url"])("makes unavailable evidence explicit for %s", (url) => {
+    const nutrition = { ...product({ calories: 16, proteinGrams: 4 }).nutrition, observedAt: null };
+    const markup = renderDetail({ nutritionEvidenceUrl: url, nutritionEvidenceAuthority: null, nutrition });
+    expect(markup).toContain("Original nutrition source link unavailable.");
+    expect(markup).toContain("Observation date unavailable.");
+    expect(markup).toContain("Evidence authority not recorded.");
+    expect(markup).not.toContain("javascript:");
   });
 });

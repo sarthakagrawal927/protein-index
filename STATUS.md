@@ -4,7 +4,7 @@
 > [`PROJECT_STATUS.md`](PROJECT_STATUS.md). Update this file each working
 > session; update `PROJECT_STATUS.md` when PR-sized work completes.
 
-Last updated: 2026-08-23
+Last updated: 2026-09-07
 
 ## Current objective
 
@@ -15,6 +15,11 @@ reactivate scheduled producers, publication workflows, migrations, or catalog
 expansion.
 
 ## Active work
+
+- Owner-authorized shareability repair: product details now retain nutrition
+  status, evidence authority, original source links and observation dates.
+  Derived density explicitly inherits the macro evidence status. Deployment
+  and live qualification remain pending; data production remains retired.
 
 - Release issue #10: product-shaped asynchronous states, stable background
   refresh, and bounded public coverage caching. No evidence or data workflows
@@ -75,9 +80,8 @@ expansion.
 
 ## Next steps
 
-None while retired. Any future work starts with an explicit reactivation
-decision that defines whether the existing evidence, workflows, and production
-surface should be restored or archived.
+Complete checks and live qualification for the authorized presentation repair.
+Any resumption of data production requires a separate reactivation decision.
 
 ## Deferred
 
