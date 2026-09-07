@@ -81,7 +81,9 @@ expansion.
 ## Next steps
 
 The full `pnpm check` and docs validation pass for the presentation repair.
-Confirm the canonical public repository and complete live qualification.
+The live source index points to this repository; the catalog still points to
+the divergent resilience repository. Preserve its unique discovery routes during
+reconciliation. Complete live qualification after approved deployment.
 Any resumption of data production requires a separate reactivation decision.
 
 ## Deferred

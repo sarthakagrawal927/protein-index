@@ -546,6 +546,21 @@ export function ProductDrawer({ detail, loading, error, onClose }: {
                 <div><span>Protein / 100 kcal</span><strong><MetricValue result={detail.metrics.proteinPer100Calories} suffix=" g" /></strong></div>
               </div>
             </section>
+
+            <section aria-label="Original catalog sources">
+              <h3>Original catalog sources</h3>
+              <p>Records associated with this product. These links do not verify the macros above.</p>
+              {detail.sourceRecords.length === 0 ? <p>No source records available.</p> : <ul>
+                {detail.sourceRecords.map((record) => {
+                  const url = publicEvidenceUrl(record.sourceUrl);
+                  const date = Number.isFinite(Date.parse(record.observedAt)) ? new Date(record.observedAt).toISOString().slice(0, 10) : null;
+                  return <li key={record.id}>
+                    {url ? <a href={url} target="_blank" rel="noreferrer">{record.source.replaceAll("_", " ")} ↗</a> : <span>{record.source.replaceAll("_", " ")} · source link unavailable</span>}
+                    {date ? <> · observed <time dateTime={record.observedAt}>{date}</time></> : " · observation date unavailable"}
+                  </li>;
+                })}
+              </ul>}
+            </section>
           </>
         )}
       </aside>

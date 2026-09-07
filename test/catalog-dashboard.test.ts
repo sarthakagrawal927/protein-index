@@ -223,3 +223,21 @@ describe("product detail evidence", () => {
     expect(markup).not.toContain("javascript:");
   });
 });
+
+
+describe("detail source records", () => {
+  it("exposes original records even when selected nutrition evidence is missing", () => {
+    const markup = renderDetail({ nutritionStatus: "unverified", nutritionEvidenceUrl: null, sourceRecords: [{ id: "source-1", source: "open_food_facts", sourceRecordId: "8906090641067", sourceUrl: "https://world.openfoodfacts.org/product/8906090641067", observedAt: "2026-04-12T17:42:54.000Z", resolutionRule: "exact_gtin" }] });
+    expect(markup).toContain("Original nutrition source link unavailable.");
+    expect(markup).toContain('href="https://world.openfoodfacts.org/product/8906090641067"');
+    expect(markup).toContain("These links do not verify the macros above.");
+    expect(markup).toContain("2026-04-12");
+  });
+
+  it("does not turn unsafe source records into links", () => {
+    const markup = renderDetail({ sourceRecords: [{ id: "source-1", source: "community", sourceRecordId: "1", sourceUrl: "javascript:alert(1)", observedAt: "invalid", resolutionRule: null }] });
+    expect(markup).not.toContain("javascript:");
+    expect(markup).toContain("source link unavailable");
+    expect(markup).toContain("observation date unavailable");
+  });
+});

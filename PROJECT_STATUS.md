@@ -501,3 +501,20 @@ workflow text assertions were replaced, not skipped. Repository ownership still
 needs reconciliation: the private dossier points public source at
 `protein-index-resilience`, while this maintained checkout tracks `protein-index`.
 Live deployment remains pending approval and ownership verification.
+
+
+## 2026-09-07 — Live source records and repository split
+
+Live `/llms.txt` attributes source to `Significant-Hobbies/protein-index`.
+The live Protein Water API response has unverified community nutrition, a null
+selected evidence URL, and retained Open Food Facts source records. Product
+details now expose those original records separately, with observation dates
+and an explicit warning that association does not verify displayed macros.
+Unsafe URLs remain non-clickable. Sixteen dashboard/detail regression tests pass.
+
+Read-only comparison with `protein-index-resilience` main `122c7a2` found unique
+public discovery routes there and newer maintenance work here. Both histories
+are retained; neither remote was overwritten. Before declaring repository
+consolidation complete, reconcile the public catalog pointer and review those
+unique discovery changes. The live asset still lacks the evidence repair;
+deployment and browser qualification remain pending.
